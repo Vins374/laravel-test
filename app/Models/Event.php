@@ -16,7 +16,7 @@ class Event extends Model
 			$query->skip($start);
 			if(!empty($limit))
 				$query->take($limit);
-			return ["status" => true, "message" => "Event data", "data" => $query->get() ];
+			return ["status" => true, "message" => "Event data", "data" => $query->with('workshops')->get() ];
 		}
 		catch(\Exception $e) {
 			\Log::error($e->getFile(). ' - '. $e->getLine() .' - '. $e->getMessage());

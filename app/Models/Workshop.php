@@ -16,7 +16,7 @@ class Workshop extends Model
 		$query = self::select();
 		$query->where("start", ">", date("Y-m-d H:i:s"));
 		$query->groupBy("event_id");
-		return $query->get();
+		return $query->with('event')->get();
 	}
 
 	public function event()

@@ -127,7 +127,7 @@ class EventsController extends BaseController
      * @param responseData receive
      * @return json format data
      * **/
-    private function jsonResponse($responseData) {
+    public function jsonResponse($responseData) {
         return response()->json($responseData);
     }
 
