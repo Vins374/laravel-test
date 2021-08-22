@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Workshop;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -11,6 +12,11 @@ use Illuminate\Support\Facades\Date;
 
 class EventsController extends BaseController
 {
+    function __construct() {
+        $this->objEvent = new Event;
+        $this->objWorkshop = new Workshop;
+    }
+
     /*
      Requirements:
     - maximum 2 sql queries
@@ -97,7 +103,37 @@ class EventsController extends BaseController
      */
 
     public function getEventsWithWorkshops() {
-        throw new \Exception('implement in coding task 1');
+        try {
+            $eventQueryResponse = $this->objEvent->getAll();
+            if($eventQueryResponse['status']) {
+                $eventArray = [];
+                foreach($eventQueryResponse['data'] as $event) {
+                    $eventData = $event;
+                    $event->workshops;
+                    array_push($eventArray, $eventData);
+                } 
+                return $this->jsonResponse(["status" => true, "message" => "Event details found", "events" => $eventArray]);    
+            }
+            else
+                return $this->jsonResponse(["stauts" => false, "message" => $eventQueryResponse['message']]);
+        }
+        catch(\Exception $e) {
+            $this->errorLog($e);
+            return $this->jsonResponse(["stauts" => false, "message" => "Something went wrong, please try after sometime"]);
+        }
+    }
+
+    /**
+     * @param responseData receive
+     * @return json format data
+     * **/
+    private function jsonResponse($responseData) {
+        return response()->json($responseData);
+    }
+
+    private function errorLog($e)
+    {
+        \Log::error($e->getFile(). ' - '. $e->getLine() .' - '. $e->getMessage());
     }
 
 
@@ -176,6 +212,23 @@ class EventsController extends BaseController
      */
 
     public function getFutureEventsWithWorkshops() {
-        throw new \Exception('implement in coding task 2');
+        try {
+            $workshops = $this->objWorkshop->getActiveWorkShops();
+            $eventArray = [];
+            foreach($workshops as $workshop) {
+                $eventData = $workshop->event;
+                $workshop->event->activeWorkshop;
+                array_push($eventArray, $eventData);
+            }
+            return $this->jsonResponse(["status" => true, "message" => "Event details found", "events" => $eventArray]);    
+        }
+        catch(\Exception $e) {
+            $this->errorLog($e);
+            return $this->jsonResponse(["stauts" => false, "message" => "Something went wrong, please try after sometime"]);
+        }
+        
+
+
+        // throw new \Exception('implement in coding task 2');
     }
 }
